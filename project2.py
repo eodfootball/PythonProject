@@ -174,7 +174,7 @@ def chest_1():
     with open("chest.txt", "r") as tool:
         chest = tool.read()
         print(chest)
-        if currentroom == "hermit_hut":
+        if currentroom == 'hermit_hut':
             print(Fore.YELLOW + "It is dangerous to go alone, take this..." + Fore.RED)
     move[0] = input('>')
     if "go chest" in move[0]:
