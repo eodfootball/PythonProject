@@ -2,6 +2,7 @@
 import sys
 from colorama import Fore
 
+#Game Instructions
 def showinstructions():
     print(Fore.CYAN + "Welcome to TextCraft!")
     print(Fore.RED + 'You wakeup in a strange and dark room. \nYou see one door leading out and a table in the middle of the room with a note on it.')
@@ -14,6 +15,7 @@ def showinstructions():
         read [note]
         destroy [wall]''')
 
+#Player Status
 def showstatus():
     print('====================')
     print('You are in the ' + currentroom)
@@ -33,9 +35,16 @@ def showstatus():
     print("Type 'help' for available commands, or 'q' to quit.")
     print('====================')
 
+#Setting Variables
 inventory = []
 player_name = (input(Fore.RED + "What is your name?"))
+currentroom = "strange_room"
+# def f():
+#     global currentroom 
+#     currentroom = "strange_room"
+#     print(currentroom)
 
+# Room and Navigation Layout
 rooms = {
     'strange_room' : {
         'north' : 'hallway_1',
@@ -88,7 +97,8 @@ rooms = {
     },
     'blocked_in' : {
         'north' : 'escape_room',
-        'south' : 'monster_lair'
+        'south' : 'monster_lair',
+        'wall' : 'brick'
     },
     'escape_room' : {
         'south' : 'blocked_in',
@@ -96,10 +106,9 @@ rooms = {
     }
 }
 
-currentroom = 'strange_room'
-
 showinstructions()
 
+#Defining specific movements and actions within rooms. 
 def strange_room():
     move[0] = input('>')
     if move[0] == "read note" and ('note') in inventory:
@@ -136,7 +145,6 @@ def bear_cave():
 def armor_room():
     print('It looks like you found a workshop.\nThere are tools everywhere and pieces metal and cloth strung about.\nIs that a chest?')
     chest_1()
-
 def monster_lair():
     print("Is that a DRAGON?????\nIt looks like he is blocking the only exit.\nFight of Flight!")
     with open("dragon2.txt", "r") as drago:
@@ -153,20 +161,15 @@ def monster_lair():
             sys.exit()
         elif 'armor' in inventory:
             print("You attacked a dragon with no weapon?\nDarwin Award Winner.\nTry Again!!!")
+            with open("darwin.txt", "r") as tool:
+                darwin = tool.read()
+                print(darwin)
             sys.exit()
         else:
             print('You obviously did not think this plan out.\nNext time, think before you act.')
             sys.exit()
-    if move[0] == 'get pickaxe': 
-        if 'beast' in rooms[currentroom] and 'bear' in rooms[currentroom]['beast']:
-            print("You woke a sleeping bear.\nThat was not a good idea.\nYou have been mauled.\nGood Bye!")
-            sys.exit()
-        else:
-            print("This might come in handy!")
-            pass
     if move[0] == 'go chest':
         chest_1()
-
 def chest_1():
     with open("chest.txt", "r") as tool:
         chest = tool.read()
@@ -202,7 +205,31 @@ def chest_1():
     #         del rooms['chest1']['item']
     #     else:
     #         print('Unable to get ' + move[1] + '!')
-
+def escape_room():
+    with open("horse.txt", "r") as tool:
+                horse = tool.read()
+                print(horse)
+    print('Congratulations,' + player_name + '! Against all odds, you made it out alive.\nYou see a horse, now you can live your lifelong dream.\nGet that horse and ride off into the sunset.')
+    if move[0] == 'get' :
+        if "item" in rooms[currentroom] and move[1] in rooms[currentroom]['item']:
+            inventory += [move[1]]
+        with open("sunset.txt", "r") as tool:
+                sunset = tool.read()
+                print(sunset)
+                sys.exit()     
+def blocked_in():
+    print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
+    move[0] = input('>')
+    if move[0] == 'destroy wall':
+        if 'pickaxe' in inventory: 
+            print('Using the pickaxe, you are able to clear your path out.')
+            del rooms['wall']['brick']
+        else:
+            print('You do not have the right tools for the job.')
+    if move[0] == 'go north':
+        if 'wall' in rooms[currentroom] and 'brick' in rooms[currentroom]['wall']:
+            print("You are unable to move forward. A brick wall is blocking your way.")
+#General Game Control Setup
 while True:
     showstatus()
     move = ''
@@ -249,6 +276,7 @@ while True:
         bear_cave()
     if currentroom == 'monster_lair':
         monster_lair()
-
+    if currentroom == 'escape_room':
+        escape_room()
 
 
