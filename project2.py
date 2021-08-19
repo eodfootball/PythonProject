@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 from colorama import Fore
-
+currentroom = "strange_room"
 #Game Instructions
 def showinstructions():
     print(Fore.CYAN + "Welcome to TextCraft!")
@@ -16,7 +16,7 @@ def showinstructions():
         destroy [wall]''')
 
 #Player Status
-def showstatus():
+def showstatus(currentroom):
     print('====================')
     print('You are in the ' + currentroom)
     print('Inventory :' + str(inventory))
@@ -38,7 +38,7 @@ def showstatus():
 #Setting Variables
 inventory = []
 player_name = (input(Fore.RED + "What is your name?"))
-currentroom = "strange_room"
+
 # def f():
 #     global currentroom 
 #     currentroom = "strange_room"
@@ -89,7 +89,8 @@ rooms = {
     'monster_lair' : {
         'north' : 'blocked_in',
         'south' : 'hallway_3',
-        'west' : 'monster_chest'
+        'west' : 'monster_chest',
+        'beast' : 'dragon'
     },
     'monster_chest' : {
         'east' : 'monster_lair',
@@ -170,7 +171,13 @@ def monster_lair():
             sys.exit()
     if move[0] == 'go chest':
         chest_1()
-def chest_1():
+    if move[0] == 'go north':
+        if 'dragon' in currentroom['beast']:
+            print("You were unable to run past the dragon.\nYou became lunch.\nTry again later.")
+            sys.exit()
+    
+
+def chest_1(currentroom):
     with open("chest.txt", "r") as tool:
         chest = tool.read()
         print(chest)
@@ -210,9 +217,10 @@ def escape_room():
                 horse = tool.read()
                 print(horse)
     print('Congratulations,' + player_name + '! Against all odds, you made it out alive.\nYou see a horse, now you can live your lifelong dream.\nGet that horse and ride off into the sunset.')
-    if move[0] == 'get' :
+    if move[0] == 'get':
         if "item" in rooms[currentroom] and move[1] in rooms[currentroom]['item']:
-            inventory += [move[1]]
+            inventory.append(move[1])
+            del rooms[currentroom]['item']
         with open("sunset.txt", "r") as tool:
                 sunset = tool.read()
                 print(sunset)
@@ -229,9 +237,10 @@ def blocked_in():
     if move[0] == 'go north':
         if 'wall' in rooms[currentroom] and 'brick' in rooms[currentroom]['wall']:
             print("You are unable to move forward. A brick wall is blocking your way.")
+            currentroom == currentroom
 #General Game Control Setup
 while True:
-    showstatus()
+    showstatus(currentroom)
     move = ''
     while move == '':
         move = input('>')
@@ -248,11 +257,7 @@ while True:
             del rooms[currentroom]['item']
         else:
             print('Unable to get ' + move[1] + '!')
-    # if move[0] == 'enter':
-    #     if move[1] in rooms[currentroom]:
-    #         currentroom = rooms[currentroom][move[1]]
-    #     else:
-    #         print('There is nothing to open!')
+    
     if move[0] == 'help':
         print('''Commands:
         go [direction]
@@ -264,10 +269,10 @@ while True:
         destroy [wall]''')
     if move[0] == 'q' :
         break
-    # else:
-    #     print('Invalid Entry! Please Try Again...')
-            
-
+    else:
+        print('Invalid Entry! Please Try Again...')
+   
+while True:         
     if currentroom == 'hermit_hut':
         hermit_hut()
     if currentroom == 'strange_room':
