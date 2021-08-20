@@ -1,45 +1,13 @@
 #!/usr/bin/python3
 import sys
 from colorama import Fore
-currentroom = "test"
 
-#Game Instructions
-def showinstructions():
-    print(Fore.CYAN + "Welcome to TextCraft!")
-    print(Fore.RED + 'You wakeup in a strange and dark room. \nYou see one door leading out and a table in the middle of the room with a note on it.')
-    print('''Commands:
-        go [direction]
-        get [item]
-        go [chest]
-        attack [beast]
-        use [item]
-        read [note]
-        destroy [wall]''')
-
-#Player Status
-def showstatus(currentroom):
-    print('====================')
-    print('You are in ' + currentroom)
-    print('Inventory :' + str(inventory))
-    # if "chest" in rooms[currentroom]:
-    #     print('You see a ' + rooms[currentroom]['chest'])
-    if "item" in rooms[currentroom]:
-        print('You see a ' + rooms[currentroom]['item'])
-    if currentroom == 'hallway_1':
-        print("You walk into the room and see two more tunnels.\nOne straight ahead to the north and one to the west")
-    if currentroom == 'hallway_2':
-        print("As you walk into the next room, you see 4 tunnels.\nOne to the north, to the east, to the west, and the one you came through from the south.")
-    if currentroom == 'hallway_3':
-        print('You walk into a wide area.\nYou see a tunnel continue to the north, something looks to be lighting up the next room.\nBe Careful.')
-    if currentroom == 'echo_room':
-        print('You enter a small room with.\nThere is a tunnel behind you to the east.\nThere is also a tunnel to the north.')
-    print("Type 'help' for available commands, or 'q' to quit.")
-    print('====================')
-    
 #Setting Variables
+currentroom = ""
 inventory = []
 player_name = (input(Fore.RED + "What is your name? "))
-
+tool = ''
+move = ''
 # Room and Navigation Layout
 rooms = {
     'strange_room' : {
@@ -118,6 +86,39 @@ rooms = {
         'back' : 'blocked_in'
     }
 }
+
+#Game Instructions
+def showinstructions():
+    print(Fore.CYAN + "Welcome to TextCraft!")
+    print(Fore.RED + 'You wakeup in a strange and dark room. \nYou see one door leading out and a table in the middle of the room with a note on it.')
+    print('''Commands:
+        go [direction]
+        get [item]
+        go [chest]
+        attack [beast]
+        use [item]
+        read [note]
+        destroy [wall]''')
+
+#Player Status
+def showstatus(currentroom):
+    print('====================')
+    print('You are in ' + currentroom)
+    print('Inventory :' + str(inventory))
+    # if "chest" in rooms[currentroom]:
+    #     print('You see a ' + rooms[currentroom]['chest'])
+    if "item" in rooms[currentroom]:
+        print('You see a ' + rooms[currentroom]['item'])
+    if currentroom == 'hallway_1':
+        print("You walk into the room and see two more tunnels.\nOne straight ahead to the north and one to the west")
+    if currentroom == 'hallway_2':
+        print("As you walk into the next room, you see 4 tunnels.\nOne to the north, to the east, to the west, and the one you came through from the south.")
+    if currentroom == 'hallway_3':
+        print('You walk into a wide area.\nYou see a tunnel continue to the north, something looks to be lighting up the next room.\nBe Careful.')
+    if currentroom == 'echo_room':
+        print('You enter a small room with.\nThere is a tunnel behind you to the east.\nThere is also a tunnel to the north.')
+    print("Type 'help' for available commands, or 'q' to quit.")
+    print('====================')
 
 showinstructions()
 
@@ -235,7 +236,16 @@ def chest_1(currentroom):
     #         print("You picked up a " + move[1] + '!')
     #         del rooms['chest1']['item']
     #     else:
-    #         print('Unable to get ' + move[1] + '!')
+    #         print('Unable to get ' + move[1] + '!')  
+def blocked_in():
+    print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
+    if move[0] == 'destroy':
+        if 'pickaxe' in inventory: 
+            print('Using the pickaxe, you are able to clear your path out.')
+            del rooms[currentroom]['wall']
+        else:
+            print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
+
 def escape_room():
     with open("horse.txt", "r") as tool:
                 horse = tool.read()
@@ -249,15 +259,6 @@ def escape_room():
                 sunset = tool.read()
                 print(sunset)
                 sys.exit()     
-def blocked_in():
-    print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
-    if move[0] == 'destroy':
-        if 'pickaxe' in inventory: 
-            print('Using the pickaxe, you are able to clear your path out.')
-            del rooms[currentroom]['wall']
-        else:
-            print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
-
 #General Game Control Setup
 while True:
     showstatus(currentroom)
@@ -287,7 +288,7 @@ while True:
         read [note]
         destroy [wall]''')
     if move[0] == 'q' :
-        break
+        sys.exit()
     # else:
     #     print('Invalid Entry! Please Try Again...')
     if currentroom == 'hermit_hut':
@@ -299,7 +300,7 @@ while True:
     if currentroom == 'monster_lair':
         monster_lair()
     if currentroom == 'escape_room':
-        escape_room()
+        escape_room() 
     if currentroom == 'chest1' or 'chest3':
         chest_1(currentroom)
     if currentroom == 'armor_room':
