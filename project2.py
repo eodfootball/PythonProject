@@ -74,7 +74,7 @@ rooms = {
     'blocked_in' : {
         'north' : 'escape_room',
         'south' : 'monster_lair',
-        'item' : 'wall',
+        'beast' : 'wall',
         'back' : 'monster_lair'
     },
     'test' : {
@@ -122,6 +122,24 @@ def showstatus(currentroom):
 
 showinstructions()
 
+# def room_function():
+#     if currentroom == 'hermit_hut':
+#         hermit_hut()
+#     if currentroom == 'strange_room':
+#         strange_room()
+#     if currentroom == 'bear_cave':
+#         bear_cave()
+#     if currentroom == 'monster_lair':
+#         monster_lair()
+#     if currentroom == 'escape_room':
+#         escape_room() 
+#     if currentroom == 'chest1' or 'chest3':
+#         chest_1(currentroom)
+#     if currentroom == 'armor_room':
+#         armor_room()
+#     # if currentroom == 'blocked_in':
+#         # blocked_in()
+
 #Defining specific movements and actions within rooms. 
 def strange_room():
     move[0] = input('>').lower()
@@ -130,6 +148,7 @@ def strange_room():
             letter = letter1.read()
             print(letter)
 def hermit_hut():
+    #move[0] = input('>').lower()
     print("It is a dark room with a strange man standing behind a what looks like a chest.")
     with open("chest.txt", "r") as tool:
         chest = tool.read()
@@ -141,7 +160,7 @@ def bear_cave():
             bears = bear.read()
             print(bears)
     print("Will you kill the bear to get the tool?\nWill you leave a sleeping bear to sleep?")
-    # move[0] = input('>').lower()
+    move[0] = input('>').lower()
     if move[0] == 'attack bear':
         if 'sword' in inventory: 
             print('You have killed the bear!\nYou see that the tool under the bear is a pickaxe.')
@@ -159,6 +178,11 @@ def bear_cave():
         else:
             print("This might come in handy!")
             pass
+    elif move[0] == 'go':
+        if move[1] in rooms[currentroom]:
+            currentroom = rooms[currentroom][move[1]]
+        else:
+            print('There is nothing in this direction!')
 def armor_room():
     print('It looks like you found a workshop.\nThere are tools everywhere and pieces metal and cloth strung about.\nIs that a chest?')
     with open("chest.txt", "r") as tool:
@@ -166,6 +190,7 @@ def armor_room():
         print(chest)
     chest_1(currentroom)
 def monster_lair(): 
+    # move[0] = input('>').lower()
     if 'beast' in rooms[currentroom] and 'dragon' in rooms[currentroom]['beast']:
         print("Is that a DRAGON?????\nIt looks like he is blocking the only exit.\nFight of Flight!")
         with open("dragon2.txt", "r") as drago:
@@ -237,18 +262,26 @@ def chest_1(currentroom):
     #         del rooms['chest1']['item']
     #     else:
     #         print('Unable to get ' + move[1] + '!')  
-def blocked_in():
-    print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
-    if move[0] == 'destroy':
-        if 'pickaxe' in inventory: 
-            print('Using the pickaxe, you are able to clear your path out.')
-            del rooms[currentroom]['wall']
-        else:
-            print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
-    # if move[0] == 'north':
-    #     if 'item' in rooms[currentroom] and 'wall' in rooms[currentroom]['item'] is True:
-    #         print('There is a wall blocking your way.\nYou will need to find something to destroy it.')
-    #         return
+# def blocked_in():
+#     print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
+#     if 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
+#         print('AAAHHHH')
+#     if move[0] == 'destroy':
+#         if 'pickaxe' in inventory:
+#             print('Using the pickaxe, you are able to clear your path out.')
+#             del rooms[currentroom]['wall']
+#         else:
+#             print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
+#     if move[0] == 'go north' and 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
+#             print('There is a wall blocking your way.\nYou will need to find something to destroy it.')
+#             yield[move[0]]
+        # elif move[0] == 'go south' or 'go back':
+        #     if move[1] in rooms[currentroom]:
+        #         currentroom = rooms[currentroom][move[1]]
+        # else:
+        #     print('There is nothing in this direction!')
+
+
 def escape_room():
     with open("horse.txt", "r") as tool:
                 horse = tool.read()
@@ -269,11 +302,6 @@ while True:
     while move == '':
         move = input('What is your move? ')
     move = move.lower().split(' ', 1)
-    if move[0] == 'go':
-        if move[1] in rooms[currentroom]:
-            currentroom = rooms[currentroom][move[1]]
-        else:
-            print('There is nothing in this direction!')
     if move[0] == 'get' :
         if "item" in rooms[currentroom] and move[1] in rooms[currentroom]['item']:
             inventory.append(move[1])
@@ -281,7 +309,12 @@ while True:
             del rooms[currentroom]['item']
         else:
             print('Unable to get ' + move[1] + '!')
-    if move[0] == 'help':
+    elif move[0] == 'go':
+        if move[1] in rooms[currentroom]:
+            currentroom = rooms[currentroom][move[1]]
+        else:
+            print('There is nothing in this direction!')
+    elif move[0] == 'help':
         print('''Commands:
         go [direction]
         go [chest]
@@ -290,10 +323,9 @@ while True:
         use [item]
         read [note]
         destroy [wall]''')
-    if move[0] == 'q' :
+    elif move[0] == 'q' :
         sys.exit()
-    # else:
-    #     print('Invalid Entry! Please Try Again...')
+    # room_function()
     if currentroom == 'hermit_hut':
         hermit_hut()
     if currentroom == 'strange_room':
@@ -308,8 +340,10 @@ while True:
         chest_1(currentroom)
     if currentroom == 'armor_room':
         armor_room()
-    if currentroom == 'blocked_in':
-        blocked_in()
+    # else:
+    #     print('Invalid Entry! Please Try Again...')
+   
+    
     
 
 
