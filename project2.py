@@ -61,7 +61,7 @@ rooms = {
         'back' : 'hallway_2'
     },
     'monster_lair' : {
-        'north' : 'blocked_in',
+        'north' : 'escape_room',
         'south' : 'hallway_3',
         'chest' : 'monster_chest',
         'beast' : 'dragon',
@@ -70,20 +70,12 @@ rooms = {
     'monster_chest' : {
         'back' : 'monster_lair',
         'item' : 'diamonds'
-    },
-    'blocked_in' : {
-        'north' : 'escape_room',
-        'south' : 'monster_lair',
-        'beast' : 'wall',
-        'back' : 'monster_lair'
-    },
-    'test' : {
-        'west' : 'blocked_in'
+    
     },
     'escape_room' : {
-        'south' : 'blocked_in',
+        'south' : 'escape_room',
         'item' : 'horse',
-        'back' : 'blocked_in'
+        'back' : 'escape_room'
     }
 }
 
@@ -120,25 +112,7 @@ def showstatus(currentroom):
     print("Type 'help' for available commands, or 'q' to quit.")
     print('====================')
 
-showinstructions()
-
-# def room_function():
-#     if currentroom == 'hermit_hut':
-#         hermit_hut()
-#     if currentroom == 'strange_room':
-#         strange_room()
-#     if currentroom == 'bear_cave':
-#         bear_cave()
-#     if currentroom == 'monster_lair':
-#         monster_lair()
-#     if currentroom == 'escape_room':
-#         escape_room() 
-#     if currentroom == 'chest1' or 'chest3':
-#         chest_1(currentroom)
-#     if currentroom == 'armor_room':
-#         armor_room()
-#     # if currentroom == 'blocked_in':
-#         # blocked_in()
+showinstructions()                                                                  
 
 #Defining specific movements and actions within rooms. 
 def strange_room():
@@ -148,38 +122,59 @@ def strange_room():
             letter = letter1.read()
             print(letter)
 def hermit_hut():
-    #move[0] = input('>').lower()
     print("It is a dark room with a strange man standing behind a what looks like a chest.")
     with open("chest.txt", "r") as tool:
         chest = tool.read()
         print(chest) 
 def bear_cave(): 
     if 'beast' in rooms[currentroom] and 'bear' in rooms[currentroom]['beast']:
-        print("As you enter the cave, you see a bear sleeping.\nUnder the bears arm, you see what looks like a tool of some sort.")
+        bear_text = '''
+        As you enter the cave, you see a bear sleeping.
+        Under the bears arm, you see what looks like a tool of some sort.'''
+        print(bear_text)
         with open("sleepingbear.txt", "r") as bear:
             bears = bear.read()
             print(bears)
-    print("Will you kill the bear to get the tool?\nWill you leave a sleeping bear to sleep?")
+    see_pickaxe = '''
+    Will you kill the bear to get the tool?
+    Will you leave a sleeping bear to sleep?'''
+    print(see_pickaxe)
     move[0] = input('>').lower()
     if move[0] == 'attack bear':
         if 'sword' in inventory: 
-            print('You have killed the bear!\nYou see that the tool under the bear is a pickaxe.')
+            kill_bear = '''
+            You have killed the bear!
+            You see that the tool under the bear is a pickaxe.'''
+            print(kill_bear)
             with open("pickaxe.txt", "r") as tool:
                 pickaxe = tool.read()
                 print(pickaxe)
                 del rooms['bear_cave']['beast']
         else:
-            print("Probably shouldn't have done that bear-handed...\nPlease try again.\nA weapon may be useful.")
+            bear_death = '''
+            Probably shouldn't have done that bear-handed...
+            Please try again.
+            A weapon may be useful.'''
+            print(bear_death)
             sys.exit() 
     if move[0] == 'get pickaxe': 
         if 'beast' in rooms[currentroom] and 'bear' in rooms[currentroom]['beast']:
-            print("You woke a sleeping bear.\nThat was not a good idea.\nYou have been mauled.\nGood Bye!")
+            get_axe = '''
+            You woke a sleeping bear.
+            That was not a good idea.
+            You have been mauled.
+            Good Bye!'''
+            print(get_axe)
             sys.exit()
         else:
             print("This might come in handy!")
             pass
 def armor_room():
-    print('It looks like you found a workshop.\nThere are tools everywhere and pieces metal and cloth strung about.\nIs that a chest?')
+    armor_text = '''
+    It looks like you found a workshop.
+    There are tools everywhere and pieces metal and cloth strung about.
+    Is that a chest?'''
+    print(armor_text)
     with open("chest.txt", "r") as tool:
         chest = tool.read()
         print(chest)
@@ -194,13 +189,20 @@ def monster_lair():
     move[0] = input('>').lower()
     if move[0] == 'attack dragon':
         if 'sword' in inventory and 'armor' in inventory: 
-            print('With sheer luck, you killed the dragon with the first blow.\nYou now see a small chest in the corner.\nYou also see what looks like the way out to the north.')
+            kill_dragon ='''With sheer luck, you killed the dragon with the first blow.
+            You now see a small chest in the corner.
+            You also see what looks like the way out to the north.'''
+            print(kill_dragon)
             del rooms['monster_lair']['beast']
             with open("chest.txt", "r") as tool:
                 chest = tool.read()
                 print(chest)
         elif 'sword' in inventory:
-            print("You might want to think about your life choices.\nFind something to protect yourself with next time.\nTry Again!!!")
+            sword_only ='''
+            You might want to think about your life choices.
+            Find something to protect yourself with next time.
+            Try Again!!!'''
+            print(sword_only)
             sys.exit()
         elif 'armor' in inventory:
             print("You attacked a dragon with no weapon?\nDarwin Award Winner.\nTry Again!!!")
@@ -218,16 +220,6 @@ def monster_lair():
             print("You were unable to run past the dragon.\nYou became lunch.\nTry again later.")
             sys.exit()
 def chest_1(currentroom):
-    # with open("chest.txt", "r") as tool:
-    #     chest = tool.read()
-    #     print(chest)
-    # move[0] = input('>')
-    # if currentroom == 'chest1':
-    #     print(Fore.YELLOW + "It is dangerous to go alone, take this..." + Fore.RED)
-    
-    # if "chest" in move[0]:
-    #     if move[1] in rooms[currentroom]:
-    #             currentroom = rooms[currentroom][move[1]]
     if currentroom == "chest1":
         if 'item' in rooms[currentroom] and 'sword' in rooms[currentroom]['item']:
             with open("sword.txt", "r") as tool:
@@ -250,33 +242,6 @@ def chest_1(currentroom):
                 print(diamond)
             if move[1] in rooms[currentroom]:
                 currentroom = rooms[currentroom][move[1]]
-    # if "get" in move[0]:
-    #     if "item" in rooms['currentroom'] and move[1] in rooms['currentroom']['item']:
-    #         inventory.append(move[1])
-    #         print("You picked up a " + move[1] + '!')
-    #         del rooms['chest1']['item']
-    #     else:
-    #         print('Unable to get ' + move[1] + '!')  
-# def blocked_in():
-#     print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
-#     if 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
-#         print('AAAHHHH')
-#     if move[0] == 'destroy':
-#         if 'pickaxe' in inventory:
-#             print('Using the pickaxe, you are able to clear your path out.')
-#             del rooms[currentroom]['wall']
-#         else:
-#             print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
-#     if move[0] == 'go north' and 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
-#             print('There is a wall blocking your way.\nYou will need to find something to destroy it.')
-#             yield[move[0]]
-        # elif move[0] == 'go south' or 'go back':
-        #     if move[1] in rooms[currentroom]:
-        #         currentroom = rooms[currentroom][move[1]]
-        # else:
-        #     print('There is nothing in this direction!')
-
-
 def escape_room():
     with open("horse.txt", "r") as tool:
                 horse = tool.read()
@@ -335,8 +300,7 @@ while True:
         chest_1(currentroom)
     if currentroom == 'armor_room':
         armor_room()
-    # else:
-    #     print('Invalid Entry! Please Try Again...')
+    
    
     
     
