@@ -3,7 +3,7 @@ import sys
 from colorama import Fore
 
 #Setting Variables
-currentroom = ""
+currentroom = "test"
 inventory = []
 player_name = (input(Fore.RED + "What is your name? "))
 tool = ''
@@ -74,7 +74,7 @@ rooms = {
     'blocked_in' : {
         'north' : 'escape_room',
         'south' : 'monster_lair',
-        'wall' : 'stone',
+        'item' : 'wall',
         'back' : 'monster_lair'
     },
     'test' : {
@@ -245,7 +245,10 @@ def blocked_in():
             del rooms[currentroom]['wall']
         else:
             print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
-
+    # if move[0] == 'north':
+    #     if 'item' in rooms[currentroom] and 'wall' in rooms[currentroom]['item']:
+    #         print('There is a wall blocking your way.\nYou will need to find something to destroy it.')
+    #         return
 def escape_room():
     with open("horse.txt", "r") as tool:
                 horse = tool.read()
