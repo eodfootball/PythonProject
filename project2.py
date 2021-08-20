@@ -3,7 +3,7 @@ import sys
 from colorama import Fore
 
 #Setting Variables
-currentroom = "test"
+currentroom = "strange_room"
 inventory = []
 player_name = (input(Fore.RED + "What is your name? "))
 tool = ''
@@ -246,7 +246,7 @@ def blocked_in():
         else:
             print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
     # if move[0] == 'north':
-    #     if 'item' in rooms[currentroom] and 'wall' in rooms[currentroom]['item']:
+    #     if 'item' in rooms[currentroom] and 'wall' in rooms[currentroom]['item'] is True:
     #         print('There is a wall blocking your way.\nYou will need to find something to destroy it.')
     #         return
 def escape_room():
