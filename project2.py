@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import sys
 from colorama import Fore
-currentroom = "strange_room"
+currentroom = "test"
 
 #Game Instructions
 def showinstructions():
@@ -19,7 +19,7 @@ def showinstructions():
 #Player Status
 def showstatus(currentroom):
     print('====================')
-    print('You are in the ' + currentroom)
+    print('You are in ' + currentroom)
     print('Inventory :' + str(inventory))
     # if "chest" in rooms[currentroom]:
     #     print('You see a ' + rooms[currentroom]['chest'])
@@ -106,8 +106,11 @@ rooms = {
     'blocked_in' : {
         'north' : 'escape_room',
         'south' : 'monster_lair',
-        'wall' : 'brick',
+        'wall' : 'stone',
         'back' : 'monster_lair'
+    },
+    'test' : {
+        'west' : 'blocked_in'
     },
     'escape_room' : {
         'south' : 'blocked_in',
@@ -168,9 +171,8 @@ def monster_lair():
             dragon = drago.read()
             print(dragon)
         print(player_name + ' versus Drago the Dragon.\nWho will win?')
-    move[0] = input('>').lower()
     if move[0] == 'attack dragon':
-        if 'sword' and 'armor' in inventory: 
+        if 'sword' in inventory and 'armor' in inventory: 
             print('With sheer luck, you killed the dragon with the first blow.\nYou now see a small chest in the corner.\nYou also see what looks like the way out to the north.')
             del rooms['monster_lair']['beast']
             with open("chest.txt", "r") as tool:
@@ -249,22 +251,19 @@ def escape_room():
                 sys.exit()     
 def blocked_in():
     print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
-    if move[0] == 'destroy wall':
+    if move[0] == 'destroy':
         if 'pickaxe' in inventory: 
             print('Using the pickaxe, you are able to clear your path out.')
-            del rooms['wall']['brick']
+            del rooms[currentroom]['wall']
         else:
-            print('You do not have the right tools for the job.')
-    if move[0] == 'go north':
-        if 'wall' in rooms[currentroom] and 'brick' in rooms[currentroom]['wall']:
-            print("You are unable to move forward. A brick wall is blocking your way.")
-            currentroom == 'blocked_in'
+            print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
+
 #General Game Control Setup
 while True:
     showstatus(currentroom)
     move = ''
     while move == '':
-        move = input('>')
+        move = input('What is your move? ')
     move = move.lower().split(' ', 1)
     if move[0] == 'go':
         if move[1] in rooms[currentroom]:
@@ -277,8 +276,7 @@ while True:
             print("You picked up a " + move[1] + '!')
             del rooms[currentroom]['item']
         else:
-            #print('Unable to get ' + move[1] + '!')
-            print('NOOOOOOOOOOOO')
+            print('Unable to get ' + move[1] + '!')
     if move[0] == 'help':
         print('''Commands:
         go [direction]
