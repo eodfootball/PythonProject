@@ -61,7 +61,7 @@ rooms = {
         'back' : 'hallway_2'
     },
     'monster_lair' : {
-        'north' : 'escape_room',
+        'north' : 'blocked_in',
         'south' : 'hallway_3',
         'chest' : 'monster_chest',
         'beast' : 'dragon',
@@ -70,7 +70,12 @@ rooms = {
     'monster_chest' : {
         'back' : 'monster_lair',
         'item' : 'diamonds'
-    
+    },
+    'blocked_in' : {
+        'back' : 'monster_lair',
+        'beast' : 'wall',
+        'south' : 'monster_lair',
+        'north' : 'escape_room'
     },
     'escape_room' : {
         'south' : 'escape_room',
@@ -255,6 +260,22 @@ def escape_room():
                 sunset = tool.read()
                 print(sunset)
                 sys.exit()     
+def blocked_in(currentroom):
+    print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
+    while 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
+        move = input('What is your move? ')
+        move = move.lower().split(' ', 1)
+        if move[1] == 'north':
+            print(Fore.YELLOW + 'There is a wall blocking your way!' + Fore.RED)
+            continue
+        if move[0] == 'destroy':
+            if 'pickaxe' in inventory:
+                print('Using the pickaxe, you are able to clear your path out.')
+                del rooms[currentroom]['beast']
+            else:
+                print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
+        else:
+            break
 #General Game Control Setup
 while True:
     showstatus(currentroom)
@@ -300,6 +321,8 @@ while True:
         chest_1(currentroom)
     if currentroom == 'armor_room':
         armor_room()
+    if currentroom == 'blocked_in':
+        blocked_in(currentroom)
     
    
     

@@ -3,7 +3,7 @@ import sys
 from colorama import Fore
 
 #Setting Variables
-currentroom = "strange_room"
+currentroom = "test"
 inventory = []
 player_name = (input(Fore.RED + "What is your name? "))
 tool = ''
@@ -121,6 +121,7 @@ def showstatus(currentroom):
     print('====================')
 
 showinstructions()
+
 
 # def room_function():
 #     if currentroom == 'hermit_hut':
@@ -257,19 +258,26 @@ def chest_1(currentroom):
     #         del rooms['chest1']['item']
     #     else:
     #         print('Unable to get ' + move[1] + '!')  
-# def blocked_in():
-#     print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
-#     if 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
-#         print('AAAHHHH')
-#     if move[0] == 'destroy':
-#         if 'pickaxe' in inventory:
-#             print('Using the pickaxe, you are able to clear your path out.')
-#             del rooms[currentroom]['wall']
-#         else:
-#             print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
-#     if move[0] == 'go north' and 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
-#             print('There is a wall blocking your way.\nYou will need to find something to destroy it.')
-#             yield[move[0]]
+def blocked_in(currentroom):
+    print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
+    while 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
+        move = input('What is your move? ')
+        move = move.lower().split(' ', 1)
+        if move[1] == 'north':
+            print(Fore.YELLOW + 'There is a wall blocking your way!' + Fore.RED)
+            continue
+        if move[0] == 'destroy':
+            if 'pickaxe' in inventory:
+                print('Using the pickaxe, you are able to clear your path out.')
+                del rooms[currentroom]['wall']
+            else:
+                print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
+        else:
+            break
+    
+    # if move[0] == 'go north' and 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
+    #         print('There is a wall blocking your way.\nYou will need to find something to destroy it.')
+    #         move[0] = False
         # elif move[0] == 'go south' or 'go back':
         #     if move[1] in rooms[currentroom]:
         #         currentroom = rooms[currentroom][move[1]]
@@ -291,12 +299,15 @@ def escape_room():
                 print(sunset)
                 sys.exit()     
 #General Game Control Setup
+
 while True:
     showstatus(currentroom)
     move = ''
     while move == '':
         move = input('What is your move? ')
     move = move.lower().split(' ', 1)
+    # if currentroom == 'blocked_in':
+    #     blocked_in(currentroom)
     if move[0] == 'get' :
         if "item" in rooms[currentroom] and move[1] in rooms[currentroom]['item']:
             inventory.append(move[1])
@@ -320,7 +331,7 @@ while True:
         destroy [wall]''')
     elif move[0] == 'q' :
         sys.exit()
-    # room_function()
+        # room_function()
     if currentroom == 'hermit_hut':
         hermit_hut()
     if currentroom == 'strange_room':
@@ -335,10 +346,11 @@ while True:
         chest_1(currentroom)
     if currentroom == 'armor_room':
         armor_room()
-    # else:
-    #     print('Invalid Entry! Please Try Again...')
-   
-    
+    if currentroom == 'blocked_in':
+        blocked_in(currentroom)
+        # else:
+        #     print('Invalid Entry! Please Try Again...')
+
     
 
 
