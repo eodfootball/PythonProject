@@ -1,89 +1,89 @@
 #!/usr/bin/python3
 import sys
 from colorama import Fore
+import re
 
 #Setting Variables
-currentroom = "strange_room"
+currentroom = "StrangeRoom"
 inventory = []
 player_name = (input(Fore.RED + "What is your name? "))
 tool = ''
 move = ''
 # Room and Navigation Layout
 rooms = {
-    'strange_room' : {
-        'north' : 'hallway_1',
+    'StrangeRoom' : {
+        'north' : 'SouthHallway',
         'item' : 'note'
     },
-    'hallway_1' : {
-        'north' : 'hallway_2',
-        'west' : 'hermit_hut'
+    'SouthHallway' : {
+        'north' : 'MainHall',
+        'west' : 'HermitHut'
     },
-    'hermit_hut' : {
-        'east' : 'hallway_1',
-        'chest' : 'chest1',
-        'back' : 'hallway_1'
+    'HermitHut' : {
+        'east' : 'SouthHallway',
+        'chest' : 'SwordChest',
+        'back' : 'SouthHallway'
     },
-    'chest1' : {
+    'SwordChest' : {
         'item' : 'sword',
-        'back' : 'hermit_hut'
+        'back' : 'HermitHut'
     },
-    'hallway_2' : {
-        'north' : 'hallway_3',
-        'south' : 'hallway_1',
-        'east' : 'bear_cave',
-        'west' : 'echo_room',
-        'back' : 'hallway_1'
+    'MainHall' : {
+        'north' : 'NorthHallway',
+        'south' : 'SouthHallway',
+        'east' : 'BearCave',
+        'west' : 'EchoRoom',
+        'back' : 'SouthHallway'
     },
-    'bear_cave' : {
+    'BearCave' : {
         'item' : 'pickaxe',
         'beast' : 'bear',
-        'west' : 'hallway_2',
-        'back' : 'hallway_2'
+        'west' : 'MainHall',
+        'back' : 'MainHall'
     },    
-    'echo_room' : {
-        'north' : 'armor_room',
-        'east' : 'hallway_2',
-        'back' : 'hallway_2'    
+    'EchoRoom' : {
+        'north' : 'ArmorRoom',
+        'east' : 'MainHall',
+        'back' : 'MainHall'    
     },
-    'armor_room' : {
-        'east' : 'hallway_3',
-        'south' : 'echo_room',
-        'chest' : 'chest3',
-        'back' : 'echo_room'
+    'ArmorRoom' : {
+        'east' : 'NorthHallway',
+        'south' : 'EchoRoom',
+        'chest' : 'ArmorChest',
+        'back' : 'EchoRoom'
     },
-    'chest3' : {
-        'back' : 'armor_room',
+    'ArmorChest' : {
+        'back' : 'ArmorRoom',
         'item' : 'armor'
     },
-    'hallway_3' : {
-        'north' : 'monster_lair',
-        'south' : 'hallway_2',
-        'back' : 'hallway_2'
+    'NorthHallway' : {
+        'north' : 'DragonLair',
+        'south' : 'MainHall',
+        'back' : 'MainHall'
     },
-    'monster_lair' : {
-        'north' : 'blocked_in',
-        'south' : 'hallway_3',
-        'chest' : 'monster_chest',
+    'DragonLair' : {
+        'north' : 'BlockedIn',
+        'south' : 'NorthHallway',
+        'chest' : 'DragonChest',
         'beast' : 'dragon',
-        'back' : 'hallway_3'
+        'back' : 'NorthHallway'
     },
-    'monster_chest' : {
-        'back' : 'monster_lair',
+    'DragonChest' : {
+        'back' : 'DragonLair',
         'item' : 'diamonds'
     },
-    'blocked_in' : {
-        'back' : 'monster_lair',
+    'BlockedIn' : {
+        'back' : 'DragonLair',
         'beast' : 'wall',
-        'south' : 'monster_lair',
-        'north' : 'escape_room'
+        'south' : 'DragonLair',
+        'north' : 'EscapeRoom'
     },
-    'escape_room' : {
-        'south' : 'escape_room',
+    'EscapeRoom' : {
+        'south' : 'BlockedIn',
         'item' : 'horse',
-        'back' : 'escape_room'
+        'back' : 'BlockedIn'
     }
 }
-
 #Game Instructions
 def showinstructions():
     print(Fore.CYAN + "Welcome to TextCraft!")
@@ -95,30 +95,48 @@ def showinstructions():
         attack [beast]
         use [item]
         read [note]
-        destroy [wall]''')
+        break [wall]''')
 
 #Player Status
 def showstatus(currentroom):
     print('====================')
-    print('You are in ' + currentroom)
+    print(capital_words_spaces('You are in a' + currentroom))
     print('Inventory :' + str(inventory))
     # if "chest" in rooms[currentroom]:
     #     print('You see a ' + rooms[currentroom]['chest'])
     if "item" in rooms[currentroom]:
         print('You see a ' + rooms[currentroom]['item'])
-    if currentroom == 'hallway_1':
-        print("You walk into the room and see two more tunnels.\nOne straight ahead to the north and one to the west")
-    if currentroom == 'hallway_2':
-        print("As you walk into the next room, you see 4 tunnels.\nOne to the north, to the east, to the west, and the one you came through from the south.")
-    if currentroom == 'hallway_3':
-        print('You walk into a wide area.\nYou see a tunnel continue to the north, something looks to be lighting up the next room.\nBe Careful.')
-    if currentroom == 'echo_room':
-        print('You enter a small room with.\nThere is a tunnel behind you to the east.\nThere is also a tunnel to the north.')
+    if currentroom == 'SouthHallway':
+        print('''
+        You walk into the room and see two more tunnels.
+        One straight ahead to the north and one to the west.
+        Available Moves: go [direction]
+        ''')
+    if currentroom == 'MainHall':
+        print('''
+        As you walk into the next room, you see 4 tunnels.
+        One to the north, to the east, to the west, and the one you came through from the south.
+        Available Moves: go [direction]
+        ''')
+    if currentroom == 'NorthHallway':
+        print('''You walk into a wide area.
+        You see a tunnel continue to the north, something looks to be lighting up the next room.
+        Be Careful.
+        Available Moves: go [direction]
+        ''')
+    if currentroom == 'EchoRoom':
+        print('''
+        You enter a small room with.
+        There is a tunnel behind you to the east.
+        There is also a tunnel to the north.
+        Available Moves: go [direction]
+        ''')
     print("Type 'help' for available commands, or 'q' to quit.")
     print('====================')
 
 showinstructions()                                                                  
-
+def capital_words_spaces(str1):
+  return re.sub(r"(\w)([A-Z])", r"\1 \2", str1)
 #Defining specific movements and actions within rooms. 
 def strange_room():
     move[0] = input('>').lower()
@@ -131,12 +149,14 @@ def hermit_hut():
     with open("chest.txt", "r") as tool:
         chest = tool.read()
         print(chest) 
+    print("Available Moves: go [direction], open [chest]")
 def bear_cave(): 
     if 'beast' in rooms[currentroom] and 'bear' in rooms[currentroom]['beast']:
         bear_text = '''
         As you enter the cave, you see a bear sleeping.
         Under the bears arm, you see what looks like a tool of some sort.'''
         print(bear_text)
+    print("Available Moves: go [direction], attack [beast], get [item]")
         with open("sleepingbear.txt", "r") as bear:
             bears = bear.read()
             print(bears)
@@ -154,7 +174,7 @@ def bear_cave():
             with open("pickaxe.txt", "r") as tool:
                 pickaxe = tool.read()
                 print(pickaxe)
-                del rooms['bear_cave']['beast']
+                del rooms['BearCave']['beast']
         else:
             bear_death = '''
             Probably shouldn't have done that bear-handed...
@@ -186,19 +206,26 @@ def armor_room():
     chest_1(currentroom)
 def monster_lair(): 
     if 'beast' in rooms[currentroom] and 'dragon' in rooms[currentroom]['beast']:
-        print("Is that a DRAGON?????\nIt looks like he is blocking the only exit.\nFight of Flight!")
+        print('''
+        Is that a DRAGON?????
+        It looks like he is blocking the only exit.
+        Fight of Flight!
+        ''')
         with open("dragon2.txt", "r") as drago:
             dragon = drago.read()
             print(dragon)
-        print(player_name + ' versus Drago the Dragon.\nWho will win?')
+        print(player_name + ' the Brave versus Alduin the Dragon.\nWho will win?')
+    print("Available Moves: go [direction], attack [beast]
     move[0] = input('>').lower()
     if move[0] == 'attack dragon':
         if 'sword' in inventory and 'armor' in inventory: 
-            kill_dragon ='''With sheer luck, you killed the dragon with the first blow.
+            kill_dragon ='''
+            With sheer luck, you killed the dragon with the first blow.
             You now see a small chest in the corner.
-            You also see what looks like the way out to the north.'''
+            You also see what looks like the way out to the north.
+            '''
             print(kill_dragon)
-            del rooms['monster_lair']['beast']
+            del rooms['DragonLair']['beast']
             with open("chest.txt", "r") as tool:
                 chest = tool.read()
                 print(chest)
@@ -210,22 +237,31 @@ def monster_lair():
             print(sword_only)
             sys.exit()
         elif 'armor' in inventory:
-            print("You attacked a dragon with no weapon?\nDarwin Award Winner.\nTry Again!!!")
+            print('''You attacked a dragon with no weapon?
+            Darwin Award Winner.
+            Try Again!!!''')
             with open("darwin.txt", "r") as tool:
                 darwin = tool.read()
                 print(darwin)
             sys.exit()
         else:
-            print('You obviously did not think this plan out.\nNext time, think before you act.')
+            print('''
+            You obviously did not think this plan out.
+            Next time, think before you act.
+            ''')
             sys.exit()
     if move[0] == 'go chest':
         chest_1(currentroom)
     if move[0] == 'go north':
         if 'beast' in rooms[currentroom] and 'dragon' in rooms[currentroom]['beast']:
-            print("You were unable to run past the dragon.\nYou became lunch.\nTry again later.")
+            print('''
+            You were unable to run past the dragon.
+            You became lunch.
+            Try again later.
+            ''')
             sys.exit()
 def chest_1(currentroom):
-    if currentroom == "chest1":
+    if currentroom == "SwordChest":
         if 'item' in rooms[currentroom] and 'sword' in rooms[currentroom]['item']:
             with open("sword.txt", "r") as tool:
                 sword = tool.read()
@@ -233,14 +269,14 @@ def chest_1(currentroom):
             print(Fore.YELLOW + "It is dangerous to go alone, take this..." + Fore.RED)
             if move[1] in rooms[currentroom]:
                 currentroom = rooms[currentroom][move[1]]
-    if currentroom == "chest3":
+    if currentroom == "ArmorChest":
         if 'item' in rooms[currentroom] and 'armor' in rooms[currentroom]['item']:
             with open("shield1.txt", "r") as tool:
                 armor = tool.read()
                 print(armor)
             if move[1] in rooms[currentroom]:
                 currentroom = rooms[currentroom][move[1]]
-    if currentroom == "monster_chest":
+    if currentroom == "DragonChest":
         if 'item' in rooms[currentroom] and 'diamond' in rooms[currentroom]['item']:
             with open("diamonds.txt", "r") as tool:
                 diamond = tool.read()
@@ -248,10 +284,16 @@ def chest_1(currentroom):
             if move[1] in rooms[currentroom]:
                 currentroom = rooms[currentroom][move[1]]
 def escape_room():
-    with open("horse.txt", "r") as tool:
-                horse = tool.read()
-                print(horse)
-    print('Congratulations,' + player_name + '! Against all odds, you made it out alive.\nYou see a horse, now you can live your lifelong dream.\nGet that horse and ride off into the sunset.')
+    if 'item' in rooms[currentroom] and 'horse' in rooms[currentroom]['item']:
+        with open("horse.txt", "r") as tool:
+            horse = tool.read()
+            print(horse)
+        rideoff = '''
+        ! Against all odds, you made it out alive.
+        You see a horse, now you can live your lifelong dream.
+        Get that horse and ride off into the sunset.'''
+        print('Congratulations,' + player_name + rideoff)
+    print("Available Moves: go [direction], get [item]")
     if move[0] == 'get':
         if "item" in rooms[currentroom] and move[1] in rooms[currentroom]['item']:
             inventory.append(move[1])
@@ -261,14 +303,15 @@ def escape_room():
                 print(sunset)
                 sys.exit()     
 def blocked_in(currentroom):
-    print('It looks like the path ahead is blocked.\nDo you have the tools to break through?')
+    print('It looks like the path ahead is blocked.\nDo you have the tools to break through the wall?')
+    print("Available Moves: go [direction], break [wall]")
     while 'beast' in rooms[currentroom] and 'wall' in rooms[currentroom]['beast']:
         move = input('What is your move? ')
         move = move.lower().split(' ', 1)
         if move[1] == 'north':
             print(Fore.YELLOW + 'There is a wall blocking your way!' + Fore.RED)
             continue
-        if move[0] == 'destroy':
+        if move[0] == 'break':
             if 'pickaxe' in inventory:
                 print('Using the pickaxe, you are able to clear your path out.')
                 del rooms[currentroom]['beast']
@@ -276,6 +319,24 @@ def blocked_in(currentroom):
                 print(Fore.YELLOW + 'You do not have the right tools for the job.' + Fore.RED)
         else:
             break
+def room_function():
+    if currentroom == 'HermitHut':
+        hermit_hut()
+    if currentroom == 'StrangeRoom':
+        strange_room()
+    if currentroom == 'BearCave':
+        bear_cave()
+    if currentroom == 'DragonLair':
+        monster_lair()
+    if currentroom == 'EscapeRoom':
+        escape_room() 
+    if currentroom == 'SwordChest' or 'ArmorChest':
+        chest_1(currentroom)
+    if currentroom == 'ArmorRoom':
+        armor_room()
+    if currentroom == 'BlockedIn':
+        blocked_in(currentroom)
+
 #General Game Control Setup
 while True:
     showstatus(currentroom)
@@ -303,26 +364,12 @@ while True:
         attack [monster]
         use [item]
         read [note]
-        destroy [wall]''')
+        break [wall]''')
     elif move[0] == 'q' :
         sys.exit()
-    # room_function()
-    if currentroom == 'hermit_hut':
-        hermit_hut()
-    if currentroom == 'strange_room':
-        strange_room()
-    if currentroom == 'bear_cave':
-        bear_cave()
-    if currentroom == 'monster_lair':
-        monster_lair()
-    if currentroom == 'escape_room':
-        escape_room() 
-    if currentroom == 'chest1' or 'chest3':
-        chest_1(currentroom)
-    if currentroom == 'armor_room':
-        armor_room()
-    if currentroom == 'blocked_in':
-        blocked_in(currentroom)
+    room_function()
+
+  
     
    
     
