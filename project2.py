@@ -9,6 +9,16 @@ inventory = []
 player_name = (input(Fore.RED + "What is your name? "))
 tool = ''
 move = ''
+game_instructions = '''
+Commands:
+    go [direction]
+    get [item]
+    open [chest]
+    attack [beast]
+    use [item]
+    read [note]
+    break [wall]
+    '''
 # Room and Navigation Layout
 rooms = {
     'StrangeRoom' : {
@@ -87,20 +97,17 @@ rooms = {
 #Game Instructions
 def showinstructions():
     print(Fore.CYAN + "Welcome to TextCraft!")
-    print(Fore.RED + 'You wakeup in a strange and dark room. \nYou see one door leading out and a table in the middle of the room with a note on it.')
-    print('''Commands:
-        go [direction]
-        get [item]
-        go [chest]
-        attack [beast]
-        use [item]
-        read [note]
-        break [wall]''')
+    welcome_message = '''
+    You wakeup in a strange and dark room. 
+    You see one door leading out and a table in the middle of the room with a note on it.
+    '''
+    print(Fore.RED + welcome_message)
+    print(game_instructions)
 
 #Player Status
 def showstatus(currentroom):
-    print('====================')
-    print(capital_words_spaces('You are in a' + currentroom))
+    print('==============================')
+    print(capital_words_spaces('You are in a' + currentroom + "."))
     print('Inventory :' + str(inventory))
     # if "chest" in rooms[currentroom]:
     #     print('You see a ' + rooms[currentroom]['chest'])
@@ -112,12 +119,20 @@ def showstatus(currentroom):
         One straight ahead to the north and one to the west.
         Available Moves: go [direction]
         ''')
+    if currentroom == 'HermitHut':
+        print('Available Moves: go [direction], open [chest]')
     if currentroom == 'MainHall':
         print('''
         As you walk into the next room, you see 4 tunnels.
         One to the north, to the east, to the west, and the one you came through from the south.
         Available Moves: go [direction]
         ''')
+    if currentroom == 'BearCave':
+        print('Available Moves: go [direction], attack [beast], get [item]')
+    if currentroom == 'DragonLair':
+        print('Available Moves: go [direction], attack [beast], open [chest]')
+    if currentroom == 'ArmorRoom':
+        print('Available Moves: go [direction], open [chest]')
     if currentroom == 'NorthHallway':
         print('''You walk into a wide area.
         You see a tunnel continue to the north, something looks to be lighting up the next room.
@@ -131,8 +146,14 @@ def showstatus(currentroom):
         There is also a tunnel to the north.
         Available Moves: go [direction]
         ''')
+    if currentroom == 'BlockedIn':
+        print('Available Moves: go [direction], break [wall]')
+    if currentroom == 'EscapeRoom':
+        print('Available Moves: go [direction], get [item]')
+    if currentroom == 'SwordChest' or 'ArmorChest' or 'DragonChest':
+        print('Available Moves: go back, get [item]')
     print("Type 'help' for available commands, or 'q' to quit.")
-    print('====================')
+    print('==============================')
 
 showinstructions()                                                                  
 def capital_words_spaces(str1):
@@ -156,7 +177,6 @@ def bear_cave():
         As you enter the cave, you see a bear sleeping.
         Under the bears arm, you see what looks like a tool of some sort.'''
         print(bear_text)
-    print("Available Moves: go [direction], attack [beast], get [item]")
         with open("sleepingbear.txt", "r") as bear:
             bears = bear.read()
             print(bears)
@@ -215,7 +235,7 @@ def monster_lair():
             dragon = drago.read()
             print(dragon)
         print(player_name + ' the Brave versus Alduin the Dragon.\nWho will win?')
-    print("Available Moves: go [direction], attack [beast]
+    print("Available Moves: go [direction], attack [beast]")
     move[0] = input('>').lower()
     if move[0] == 'attack dragon':
         if 'sword' in inventory and 'armor' in inventory: 
@@ -357,14 +377,7 @@ while True:
         else:
             print('There is nothing in this direction!')
     elif move[0] == 'help':
-        print('''Commands:
-        go [direction]
-        go [chest]
-        get [item]
-        attack [monster]
-        use [item]
-        read [note]
-        break [wall]''')
+        print(game_instructions)
     elif move[0] == 'q' :
         sys.exit()
     room_function()

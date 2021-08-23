@@ -1,0 +1,11 @@
+          
+      DOOR OUT
+         |
+       north
+         |
+     w   |     e
+  -- e ------- a --
+     s   |     s
+     t   |     t
+       south
+         |
